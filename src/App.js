@@ -1,21 +1,40 @@
 import React from 'react'
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
 
 const Menu = () => (
-  <div>    
-    <a href='#'>anecdotes</a>&nbsp;
-    <a href='#'>create new</a>&nbsp;
-    <a href='#'>about</a>&nbsp;
+  <div>
+    <Link to="/anecdotes">anecdotes</Link>&nbsp;
+    <Link to="/create">create new</Link>&nbsp;
+    <Link to="/about">about</Link>&nbsp; 
   </div>
+)
+
+const Notification = ({ notification }) => (
+  <div>{notification}</div>
 )
 
 const AnecdoteList = ({ anecdotes }) => (
   <div>
     <h2>Anecdotes</h2>
     <ul>
-      {anecdotes.map(anecdote => <li key={anecdote.id} >{anecdote.content}</li>)}
+      {anecdotes.map(anecdote => 
+      <li key={anecdote.id} >
+        <Link to={`/anecdotes/${anecdote.id}`}>{anecdote.content}</Link>
+      </li>)}
     </ul>  
   </div>
 )
+
+const Anecdote = ({ anecdote }) => {
+  return (
+  <div>
+    <h2>
+      {anecdote.content} by {anecdote.author}
+    </h2>
+    <div>has {anecdote.votes} votes</div>
+    <div>for more info see <a href={anecdote.info}>{anecdote.info}</a></div>
+  </div>
+)}
 
 const About = () => (
   <div>
@@ -33,6 +52,7 @@ const About = () => (
 
 const Footer = () => (
   <div>
+    <br/>
     Anecdote app for <a href='https://courses.helsinki.fi/fi/TKT21009/121540749'>Full Stack -sovelluskehitys</a>.
 
     See <a href='https://github.com/mluukkai/routed-anecdotes'>https://github.com/mluukkai/routed-anecdotes</a> for the source code. 
@@ -55,6 +75,8 @@ class CreateNew extends React.Component {
   }
 
   handleSubmit = (e) => {
+    console.log('handlesubmit')
+    console.log('this.props', this.props)
     e.preventDefault()
     this.props.addNew({
       content: this.state.content,
@@ -62,6 +84,7 @@ class CreateNew extends React.Component {
       info: this.state.info,
       votes: 0
     })
+    this.props.history.history.push('/anecdotes')
   }
 
   render() {
@@ -85,7 +108,6 @@ class CreateNew extends React.Component {
         </form>
       </div>  
     )
-
   }
 }
 
@@ -114,9 +136,12 @@ class App extends React.Component {
     } 
   }
 
-  addNew = (anecdote) => {
+  addNew = ( anecdote ) => {
+    console.log('create clicked')
     anecdote.id = (Math.random() * 10000).toFixed(0)
     this.setState({ anecdotes: this.state.anecdotes.concat(anecdote) })
+    this.setState({notification: 'new anecdote added'})
+    setTimeout(() => this.setState({notification: null}), 5000)
   }
 
   anecdoteById = (id) =>
@@ -136,13 +161,24 @@ class App extends React.Component {
   }
 
   render() {
+    const findById = (id) => {
+      return (
+      this.state.anecdotes.find(a => a.id === id)
+      )
+    }
     return (
       <div>
         <h1>Software anecdotes</h1>
-          <Menu />
-          <AnecdoteList anecdotes={this.state.anecdotes} />
-          <About />      
-          <CreateNew addNew={this.addNew}/>
+          <Router>
+            <div>
+              <Menu />
+              <Notification notification={this.state.notification}/>
+              <Route exact path="/anecdotes" render={() => <AnecdoteList anecdotes={this.state.anecdotes} />} />
+              <Route path="/about" render={() => <About />} />      
+              <Route exact path="/create" render={(history) => <CreateNew history={history} addNew={this.addNew}/>} />
+              <Route exact path="/anecdotes/:id" render={({match}) => <Anecdote anecdote={findById(match.params.id)}/>} />
+            </div>
+          </Router>
         <Footer />
       </div>
     );
