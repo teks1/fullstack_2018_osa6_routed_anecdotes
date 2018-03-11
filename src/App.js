@@ -1,5 +1,6 @@
 import React from 'react'
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
+import { Alert, ListGroup, ListGroupItem } from 'react-bootstrap'
 
 const Menu = () => {
   const styles =  {
@@ -24,26 +25,25 @@ const Menu = () => {
 const Notification = ({ notification }) => {
   const hide = notification === "" ? 'none' : ""
   const styles =  {
-    display: hide,
-    color: 'red',
-    fontSize: 16,
-    border: '5px solid',
-    fontWeight: 'bold'
+    display: hide
   }
   console.log(styles)
   return (
-    <div style={styles}>{notification}</div>
+    <div style={styles}>
+      <Alert bsStyle="success">{notification}</Alert>
+    </div>
 )}
 
 const AnecdoteList = ({ anecdotes }) => (
   <div>
     <h2>Anecdotes</h2>
-    <ul>
+    <ListGroup>
       {anecdotes.map(anecdote => 
-      <li key={anecdote.id} >
+      <ListGroupItem key={anecdote.id}>
         <Link to={`/anecdotes/${anecdote.id}`}>{anecdote.content}</Link>
-      </li>)}
-    </ul>  
+      </ListGroupItem>
+      )}
+    </ListGroup>
   </div>
 )
 
@@ -189,7 +189,7 @@ class App extends React.Component {
       )
     }
     return (
-      <div>
+      <div className="container">
         <h1>Software anecdotes</h1>
           <Router>
             <div>
