@@ -1,17 +1,39 @@
 import React from 'react'
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
 
-const Menu = () => (
-  <div>
+const Menu = () => {
+  const styles =  {
+    color: 'red',
+    fontSize: 16,
+    border: 'ridge',
+    fontWeight: 'bold',
+    background: 'lightblue',
+    paddingTop: '10px',
+    paddingBottom: '10px',
+    paddingLeft: '10px',
+    paddingRight: '10px'
+  }
+  return (
+  <div style={styles}>
     <Link to="/anecdotes">anecdotes</Link>&nbsp;
     <Link to="/create">create new</Link>&nbsp;
     <Link to="/about">about</Link>&nbsp; 
   </div>
-)
+)}
 
-const Notification = ({ notification }) => (
-  <div>{notification}</div>
-)
+const Notification = ({ notification }) => {
+  const hide = notification === "" ? 'none' : ""
+  const styles =  {
+    display: hide,
+    color: 'red',
+    fontSize: 16,
+    border: '5px solid',
+    fontWeight: 'bold'
+  }
+  console.log(styles)
+  return (
+    <div style={styles}>{notification}</div>
+)}
 
 const AnecdoteList = ({ anecdotes }) => (
   <div>
@@ -141,7 +163,7 @@ class App extends React.Component {
     anecdote.id = (Math.random() * 10000).toFixed(0)
     this.setState({ anecdotes: this.state.anecdotes.concat(anecdote) })
     this.setState({notification: 'new anecdote added'})
-    setTimeout(() => this.setState({notification: null}), 5000)
+    setTimeout(() => this.setState({notification: ''}), 10000)
   }
 
   anecdoteById = (id) =>
